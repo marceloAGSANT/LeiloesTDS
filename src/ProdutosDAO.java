@@ -27,7 +27,7 @@ public class ProdutosDAO {
     public boolean conectar() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/uc11", "root", "root");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/uc11?useSSL=false", "root", "root");
             return true;
         } catch (ClassNotFoundException | SQLException ex) {
             System.out.println("Erro ao conectar: " + ex.getMessage());
@@ -37,11 +37,11 @@ public class ProdutosDAO {
      public int salvar(ProdutosDTO produto) {
         int status;
         try {
-            st = conn.prepareStatement("INSERT INTO produtos (nome, nome_do_episodio, valor, status) VALUES(?,?,?,?,?)");
+            st = conn.prepareStatement("INSERT INTO produtos (nome, valor, status) VALUES(?,?,?)");
             
             st.setString(1, produto.getNome());
-            st.setInt(3, produto.getValor());
-            st.setString(4, produto.getStatus());
+            st.setInt(2, produto.getValor());
+            st.setString(3, produto.getStatus());
             
             status = st.executeUpdate();
             return status; // retornar 1
