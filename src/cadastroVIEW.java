@@ -1,3 +1,6 @@
+
+import javax.swing.JOptionPane;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
@@ -35,7 +38,6 @@ public class cadastroVIEW extends javax.swing.JFrame {
         jSeparator2 = new javax.swing.JSeparator();
         btnCadastrar = new javax.swing.JButton();
         btnProdutos = new javax.swing.JButton();
-        BntSalvar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -71,13 +73,6 @@ public class cadastroVIEW extends javax.swing.JFrame {
             }
         });
 
-        BntSalvar.setText("Salvar");
-        BntSalvar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                BntSalvarActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -109,11 +104,8 @@ public class cadastroVIEW extends javax.swing.JFrame {
                                 .addComponent(cadastroValor, javax.swing.GroupLayout.DEFAULT_SIZE, 253, Short.MAX_VALUE)))
                         .addGroup(layout.createSequentialGroup()
                             .addGap(37, 37, 37)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                    .addComponent(BntSalvar, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(btnProdutos, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(btnProdutos, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 477, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addGap(0, 32, Short.MAX_VALUE))
         );
@@ -139,9 +131,7 @@ public class cadastroVIEW extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 74, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnProdutos)
-                    .addComponent(BntSalvar))
+                .addComponent(btnProdutos)
                 .addGap(22, 22, 22))
         );
 
@@ -158,12 +148,36 @@ public class cadastroVIEW extends javax.swing.JFrame {
         String nome = cadastroNome.getText();
         String valor = cadastroValor.getText();
         String status = "A Venda";
+        boolean statusDAO;
+        int resposta;
+        
         produto.setNome(nome);
         produto.setValor(Integer.parseInt(valor));
         produto.setStatus(status);
         
-        ProdutosDAO produtodao = new ProdutosDAO();
-        produtodao.cadastrarProduto(produto);
+        ProdutosDAO dao = new ProdutosDAO();
+        dao.cadastrarProduto(produto);
+        
+        statusDAO = dao.conectar();
+        if (!statusDAO) {
+            JOptionPane.showMessageDialog(null, "Erro de conexão");
+        } else {
+            resposta = dao.salvar(produto);
+            if (resposta == 1) {
+                JOptionPane.showMessageDialog(null, "Dados incluídos com sucesso");
+                // limpar os campos
+                cadastroNome.setText("");
+                cadastroValor.setText("");
+               
+                // posicionar o cursor para um próximo
+            } else if (resposta == 1062) {
+                JOptionPane.showMessageDialog(null, "Nome do episódio já foi cadastrado");
+            } else {
+                JOptionPane.showMessageDialog(null, "Erro ao tentar inserir dados");
+            }
+
+            dao.desconectar();
+        }    
         
     }//GEN-LAST:event_btnCadastrarActionPerformed
 
@@ -171,10 +185,6 @@ public class cadastroVIEW extends javax.swing.JFrame {
         listagemVIEW listagem = new listagemVIEW(); 
         listagem.setVisible(true);
     }//GEN-LAST:event_btnProdutosActionPerformed
-
-    private void BntSalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BntSalvarActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_BntSalvarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -212,7 +222,6 @@ public class cadastroVIEW extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton BntSalvar;
     private javax.swing.JButton btnCadastrar;
     private javax.swing.JButton btnProdutos;
     private javax.swing.JTextField cadastroNome;
