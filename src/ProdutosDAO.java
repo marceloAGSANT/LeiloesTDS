@@ -128,6 +128,20 @@ public class ProdutosDAO {
             return null;
         }
     }
+   
+    public int atualizar(String produtos) {
+        int status;
+        try {
+            st = conn.prepareStatement("UPDATE produtos SET status = 'vendido' WHERE id = ?");
+            
+     
+            status = st.executeUpdate();
+            return status;
+        } catch (SQLException ex) {
+            System.out.println("Erro ao atualizar: " + ex.getMessage());
+            return ex.getErrorCode();
+        }
+    }
         
 }
 
